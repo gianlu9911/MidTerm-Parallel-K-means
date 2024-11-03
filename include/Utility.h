@@ -20,6 +20,11 @@ struct alignas(64) Clusters
     std::vector<float> cum_sum_y;
 };
 
+struct TimingResult {
+    int num_points;
+    int num_threads;
+    double execution_time;
+};
 
 void savePointsToCSV(const std::vector<float>& x, const std::vector<float>& y, const std::vector<int>& cluster_id, const std::string& filename) {
     std::ofstream file(filename);
