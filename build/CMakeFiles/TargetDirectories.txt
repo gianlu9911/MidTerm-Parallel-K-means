@@ -1,0 +1,3 @@
+C:/Users/sangi/Desktop/mid term parallel kmens/build/CMakeFiles/experiment.dir
+C:/Users/sangi/Desktop/mid term parallel kmens/build/CMakeFiles/edit_cache.dir
+C:/Users/sangi/Desktop/mid term parallel kmens/build/CMakeFiles/rebuild_cache.dir
