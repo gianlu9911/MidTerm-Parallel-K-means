@@ -7,7 +7,7 @@
 #include <chrono>
 #include "Utility.h"
 
-float execute_SoA_parallel (int num_points, int num_clusters, int maxIteration, float epsilon, float max_value, int num_threads) {
+float execute_SoA (int num_points, int num_clusters, int maxIteration, float epsilon, float max_value, int num_threads, bool saving = false) {
 
     std::string output_points = "../data/output_parallel.csv";
     std::string output_centroids = "../data/centroids_parallel.csv";
@@ -127,8 +127,10 @@ float execute_SoA_parallel (int num_points, int num_clusters, int maxIteration, 
     std::chrono::duration<double> execution_time = end_time - start_time;
     std::cout << "Execution time: " << execution_time.count() << " seconds." << std::endl;
 
-    savePointsToCSV(points.x, points.y, points.cluster_id, output_points);
-    savePointsToCSV(clusters.x, clusters.y, output_centroids);
+    if(saving) {
+        savePointsToCSV(points.x, points.y, points.cluster_id, output_points);
+        savePointsToCSV(clusters.x, clusters.y, output_centroids);
+    }
 
     return (float)execution_time.count();
 }
