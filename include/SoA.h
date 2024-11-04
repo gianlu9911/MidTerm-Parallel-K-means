@@ -7,10 +7,10 @@
 #include <chrono>
 #include "Utility.h"
 
-float execute_SoA (int num_points, int num_clusters, int maxIteration, float epsilon, float max_value, int num_threads, bool saving = false) {
+float execute_SoA (int num_points, int num_clusters, int maxIteration, float epsilon, int num_threads, bool saving = false) {
 
-    std::string output_points = "../data/output_parallel.csv";
-    std::string output_centroids = "../data/centroids_parallel.csv";
+    std::string output_points = "../data/points.csv";
+    std::string output_centroids = "../data/centroids.csv";
     
     auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -82,8 +82,11 @@ float execute_SoA (int num_points, int num_clusters, int maxIteration, float eps
         points.cluster_id[point] = nearestCluster;
     }
 
+    #pragma omp parallel for
     for (size_t cluster = 0; cluster < numClusters; ++cluster) {
         clusters.size[cluster] = 0;
+        clusters.cum_sum_x[cluster] = 0.0f;
+        clusters.cum_sum_y[cluster] = 0.0f;
     }
 
     // Update clusters -> COMPUTE CUMULATIVE SUMS

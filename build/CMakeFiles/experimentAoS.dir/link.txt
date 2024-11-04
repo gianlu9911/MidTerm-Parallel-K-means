@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\experimentAoS.dir/objects.a
+C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\experimentAoS.dir/objects.a @CMakeFiles\experimentAoS.dir\objects1.rsp
+C:\msys64\ucrt64\bin\g++.exe  -O3 -march=native -ffast-math -funroll-loops -ftree-vectorize -g -Wl,--whole-archive CMakeFiles\experimentAoS.dir/objects.a -Wl,--no-whole-archive -o experimentAoS.exe -Wl,--out-implib,libexperimentAoS.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\experimentAoS.dir\linkLibs.rsp

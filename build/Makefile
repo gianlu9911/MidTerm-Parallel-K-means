@@ -128,6 +128,19 @@ experiment/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\experiment.dir\build.make CMakeFiles/experiment.dir/build
 .PHONY : experiment/fast
 
+#=============================================================================
+# Target rules for targets named experimentAoS
+
+# Build rule for target.
+experimentAoS: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 experimentAoS
+.PHONY : experimentAoS
+
+# fast build rule for target.
+experimentAoS/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\experimentAoS.dir\build.make CMakeFiles/experimentAoS.dir/build
+.PHONY : experimentAoS/fast
+
 main.obj: main.cpp.obj
 .PHONY : main.obj
 
@@ -152,6 +165,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\experiment.dir\build.make CMakeFiles/experiment.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+main2.obj: main2.cpp.obj
+.PHONY : main2.obj
+
+# target to build an object file
+main2.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\experimentAoS.dir\build.make CMakeFiles/experimentAoS.dir/main2.cpp.obj
+.PHONY : main2.cpp.obj
+
+main2.i: main2.cpp.i
+.PHONY : main2.i
+
+# target to preprocess a source file
+main2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\experimentAoS.dir\build.make CMakeFiles/experimentAoS.dir/main2.cpp.i
+.PHONY : main2.cpp.i
+
+main2.s: main2.cpp.s
+.PHONY : main2.s
+
+# target to generate assembly for a file
+main2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\experimentAoS.dir\build.make CMakeFiles/experimentAoS.dir/main2.cpp.s
+.PHONY : main2.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -161,9 +198,13 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... experiment
+	@echo ... experimentAoS
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... main2.obj
+	@echo ... main2.i
+	@echo ... main2.s
 .PHONY : help
 
 

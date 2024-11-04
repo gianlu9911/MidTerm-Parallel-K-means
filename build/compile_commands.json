@@ -4,5 +4,11 @@
   "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/experiment.dir/includes_CXX.rsp  -O3 -march=native -ffast-math -funroll-loops -ftree-vectorize -g -fopenmp -o CMakeFiles\\experiment.dir\\main.cpp.obj -c \"C:\\Users\\sangi\\Desktop\\mid term parallel kmens\\main.cpp\"",
   "file": "C:/Users/sangi/Desktop/mid term parallel kmens/main.cpp",
   "output": "CMakeFiles/experiment.dir/main.cpp.obj"
+},
+{
+  "directory": "C:/Users/sangi/Desktop/mid term parallel kmens/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/experimentAoS.dir/includes_CXX.rsp  -O3 -march=native -ffast-math -funroll-loops -ftree-vectorize -g -fopenmp -o CMakeFiles\\experimentAoS.dir\\main2.cpp.obj -c \"C:\\Users\\sangi\\Desktop\\mid term parallel kmens\\main2.cpp\"",
+  "file": "C:/Users/sangi/Desktop/mid term parallel kmens/main2.cpp",
+  "output": "CMakeFiles/experimentAoS.dir/main2.cpp.obj"
 }
 ]

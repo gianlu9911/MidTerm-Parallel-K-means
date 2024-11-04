@@ -24,8 +24,8 @@ COLORS = [
 
 
 # Read the CSV files for data and centroids
-data = pd.read_csv("data/output_parallel.csv")
-centroids = pd.read_csv("data/centroids_parallel.csv")
+data = pd.read_csv("data/points.csv")
+centroids = pd.read_csv("data/centroids.csv")
 
 # Get the points and cluster_id from the data CSV
 x = data['x']

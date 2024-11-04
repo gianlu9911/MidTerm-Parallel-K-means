@@ -15,7 +15,8 @@
 					"source" : ".",
 					"targetIndexes" : 
 					[
-						0
+						0,
+						1
 					]
 				}
 			],
@@ -30,7 +31,8 @@
 					"name" : "kmeans",
 					"targetIndexes" : 
 					[
-						0
+						0,
+						1
 					]
 				}
 			],
@@ -39,8 +41,15 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "experiment::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-experiment-Debug-e7aafa25b16140c89cfc.json",
+					"jsonFile" : "target-experiment-Debug-396e2f57506d3961dc61.json",
 					"name" : "experiment",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "experimentAoS::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-experimentAoS-Debug-295a38c2f07dc559675c.json",
+					"name" : "experimentAoS",
 					"projectIndex" : 0
 				}
 			]
