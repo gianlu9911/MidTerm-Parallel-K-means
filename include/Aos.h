@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Cluster Point.h"
+#include "ClusterPoint.h"
 #include <vector>
 #include <omp.h>
 #include <chrono>

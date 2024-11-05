@@ -1,7 +1,7 @@
 CMakeFiles/experimentAoS.dir/main2.cpp.obj: \
  C:\Users\sangi\Desktop\mid\ term\ parallel\ kmens\main2.cpp \
  C:/Users/sangi/Desktop/MIDTER~1/include/Aos.h \
- C:/Users/sangi/Desktop/MIDTER~1/include/Cluster\ Point.h \
+ C:/Users/sangi/Desktop/MIDTER~1/include/ClusterPoint.h \
  C:/msys64/ucrt64/include/c++/14.1.0/vector \
  C:/msys64/ucrt64/include/c++/14.1.0/bits/requires_hosted.h \
  C:/msys64/ucrt64/include/c++/14.1.0/x86_64-w64-mingw32/bits/c++config.h \
