@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = @CMakeFiles/experimentAoS.dir/includes_CXX.rsp
 
-CXX_FLAGS =  -O3 -march=native -ffast-math -funroll-loops -ftree-vectorize -g -fopenmp
+CXX_FLAGS =  -O3 -march=native -ffast-math -funroll-loops -ftree-vectorize -g -std=c++20 -fopenmp
 

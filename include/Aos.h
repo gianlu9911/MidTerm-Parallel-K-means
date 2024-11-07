@@ -6,16 +6,17 @@
 #include <chrono>
 #include <iostream>
 
-float execute_AOS(int num_points, int num_clusters, int maxIteration, float epsilon, int num_threads, bool saving = false) {
+float execute_AoS(int num_points, int num_clusters, int maxIteration, float epsilon, int num_threads, bool saving = false) {
     // Generate points and clusters
     std::vector<Point> points = generatePoints(num_points, num_clusters, num_threads);
     std::vector<Cluster> clusters = generateClusters(num_clusters, num_threads);
+    auto start_time = std::chrono::high_resolution_clock::now();
 
     // Set the number of threads
     omp_set_num_threads(num_threads);
+    std::cout << "Number of threads: " << num_threads << std::endl;
 
     // Start timing
-    auto start_time = std::chrono::high_resolution_clock::now();
 
     for (int iteration = 0; iteration < maxIteration; iteration++) {
         bool converged = true;
@@ -36,7 +37,10 @@ float execute_AOS(int num_points, int num_clusters, int maxIteration, float epsi
 
             if (points[i].getAssign() != best_cluster) {
                 points[i].setAssign(best_cluster);
-                converged = false;
+                #pragma omp critical
+                {
+                    converged = false;
+                }
             }
         }
 
@@ -65,6 +69,7 @@ float execute_AOS(int num_points, int num_clusters, int maxIteration, float epsi
     std::cout << "Execution time: " << execution_time << " seconds." << std::endl;
 
     if (saving) {
+        std::cout << "Saving data..." << std::endl;
         savePointsToCSV(points, "../data/points.csv");
         saveCentroidsToCSV(clusters, "../data/centroids.csv");
     }
