@@ -1,139 +1,117 @@
-#include <iostream>
-#include <vector>
-#include <limits>
-#include <cmath>
-#include <random>
-#include <omp.h>
-#include <chrono>
 #include "Utility.h"
+#include <omp.h>
 
-float execute_SoA (int num_points, int num_clusters, int maxIteration, float epsilon, int num_threads, bool saving = false) {
-
-    std::string output_points = "../data/points.csv";
-    std::string output_centroids = "../data/centroids.csv";
-    
-    auto start_time = std::chrono::high_resolution_clock::now();
-
-    // Set the number of threads
-    omp_set_num_threads(num_threads);
-
-    int numPoints = num_points;
-    int numClusters = num_clusters;
-    float min = -100.0f, max = 100.0f;
-
-    Points points;
-    Clusters clusters;
-
-    // Resize Points and Clusters data
-    points.x.resize(numPoints);
-    points.y.resize(numPoints);
-    points.cluster_id.resize(numPoints, -1);
-    points.minDistance.resize(numPoints, std::numeric_limits<float>::max());
-
-    clusters.x.resize(numClusters);
-    clusters.y.resize(numClusters);
-    clusters.cum_sum_x.resize(numClusters, 0.0f);
-    clusters.cum_sum_y.resize(numClusters, 0.0f);
-    clusters.size.resize(numClusters, 0);
-
-    #pragma omp parallel
-    {
-        std::random_device rd;
-        std::mt19937 gen(rd() + omp_get_thread_num());
-        std::uniform_real_distribution<float> dis(min, max);
-
-        // Random point initialization
-        #pragma omp for
-        for (size_t i = 0; i < numPoints; ++i) {
-            points.x[i] = dis(gen);
-            points.y[i] = dis(gen);
-            points.cluster_id[i] = -1;
-        }
-
-        // Random centroid initialization
-        #pragma omp for
-        for (int i = 0; i < numClusters; ++i) {
-            clusters.x[i] = dis(gen);
-            clusters.y[i] = dis(gen);
-            clusters.size[i] = 0;
-
-            }
+void kmeansSoA_seq(const PointsSoA &points, size_t numPoints, int k, int maxIterations, bool saving = false) {
+    std::vector<float> centroidsX(k), centroidsY(k);
+    for (int i = 0; i < k; i++) {
+        size_t randomIndex = std::rand() % numPoints;
+        centroidsX[i] = points.getX(randomIndex);
+        centroidsY[i] = points.getY(randomIndex);
     }
 
-    // Compute points-centroid distance -> Assign points to nearest cluster
-    #pragma omp parallel for schedule(dynamic, 100)
-    for (size_t point = 0; point < numPoints; ++point) {
-        float px = points.x[point];
-        float py = points.y[point];
-        float minDist = points.minDistance[point];
-        int nearestCluster = points.cluster_id[point];
+    std::vector<int> labels(numPoints, -1);
+    for (int iter = 0; iter < maxIterations; iter++) {
 
-        for (size_t cluster = 0; cluster < numClusters; ++cluster) {
-            float dx = px - clusters.x[cluster];
-            float dy = py - clusters.y[cluster];
-            float squared_distance = dx * dx + dy * dy; // No sqrt(), compare squared distances
-
-            if (squared_distance < minDist) {
-                minDist = squared_distance;
-                nearestCluster = cluster;
+        // Assign points to the nearest centroid
+        for (size_t i = 0; i < numPoints; i++) {
+            int bestCluster = -1;
+            float bestDistance = std::numeric_limits<float>::max();
+            for (int j = 0; j < k; j++) {
+                float d = distance(points, i, centroidsX[j], centroidsY[j]);
+                if (d < bestDistance) {
+                    bestDistance = d;
+                    bestCluster = j;
+                }
+            }
+            if (labels[i] != bestCluster) {
+                labels[i] = bestCluster;
             }
         }
-        points.minDistance[point] = minDist;
-        points.cluster_id[point] = nearestCluster;
-    }
 
-    #pragma omp parallel for
-    for (size_t cluster = 0; cluster < numClusters; ++cluster) {
-        clusters.size[cluster] = 0;
-        clusters.cum_sum_x[cluster] = 0.0f;
-        clusters.cum_sum_y[cluster] = 0.0f;
-    }
-
-    // Update clusters -> COMPUTE CUMULATIVE SUMS
-    #pragma omp parallel
-    {
-        std::vector<float> local_cum_sum_x(numClusters, 0.0f);
-        std::vector<float> local_cum_sum_y(numClusters, 0.0f);
-        std::vector<int> local_size(numClusters, 0);
-
-        #pragma omp for
-        for (size_t point = 0; point < numPoints; ++point) {
-            int cluster = points.cluster_id[point];
-            local_cum_sum_x[cluster] += points.x[point];
-            local_cum_sum_y[cluster] += points.y[point];
-            local_size[cluster]++;
+        // Update centroids
+        std::vector<float> newCentroidsX(k, 0.0f), newCentroidsY(k, 0.0f);
+        std::vector<int> counts(k, 0);
+        for (size_t i = 0; i < numPoints; i++) {
+            int cluster = labels[i];
+            newCentroidsX[cluster] += points.getX(i);
+            newCentroidsY[cluster] += points.getY(i);
+            counts[cluster]++;
         }
 
-        // Use atomic operations
-        for (size_t cluster = 0; cluster < numClusters; ++cluster) {
-            #pragma omp atomic
-            clusters.cum_sum_x[cluster] += local_cum_sum_x[cluster];
-
-            #pragma omp atomic
-            clusters.cum_sum_y[cluster] += local_cum_sum_y[cluster];
-
-            #pragma omp atomic
-            clusters.size[cluster] += local_size[cluster];
+        for (int j = 0; j < k; j++) {
+            if (counts[j] > 0) {
+                centroidsX[j] = newCentroidsX[j] / counts[j];
+                centroidsY[j] = newCentroidsY[j] / counts[j];
+            }
         }
     }
-
-    // Compute new centroids
-    #pragma omp parallel for
-    for (size_t cluster = 0; cluster < numClusters; ++cluster) {
-        if (clusters.size[cluster] > 0) {
-            clusters.x[cluster] = clusters.cum_sum_x[cluster] / clusters.size[cluster];
-            clusters.y[cluster] = clusters.cum_sum_y[cluster] / clusters.size[cluster];
-        }
-    }
-
-    auto end_time = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> execution_time = end_time - start_time;
-    std::cout << "Execution time: " << execution_time.count() << " seconds." << std::endl;
 
     if(saving) {
-        savePointsToCSV(points.x, points.y, points.cluster_id, output_points);
-        savePointsToCSV(clusters.x, clusters.y, output_centroids);
+        saveLabelsToCSV(labels, "../data/labels_seq.csv");
+    }
+    
+}
+
+void kmeansSoA_parallel(const PointsSoA &points, size_t numPoints, int k, int maxIterations, int numThreads, bool saving = false) {
+    omp_set_num_threads(numThreads);
+    
+    // Explicitly initialize centroids
+    std::vector<float> centroidsX(k), centroidsY(k);
+    #pragma omp parallel for
+    for (int i = 0; i < k; i++) {
+        // Generate random float within the range
+        centroidsX[i] = (-100) + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (200)));
+        centroidsY[i] = (-100) + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (200)));
     }
 
-    return (float)execution_time.count();
+    std::vector<int> labels(numPoints, -1);
+
+    // Allocate arrays for centroid updates (no need to delete)
+    float newCentroidsX[k] = {0.0f}, newCentroidsY[k] = {0.0f};
+    int counts[k] = {0};
+
+    // Iterate through the algorithm for maxIterations
+    #pragma omp parallel shared(newCentroidsX, newCentroidsY, counts)
+    {
+        for (int iter = 0; iter < maxIterations; iter++) {
+
+            // Parallelize point-to-centroid assignment
+            #pragma omp for
+            for (size_t i = 0; i < numPoints; i++) {
+                int bestCluster = -1;
+                float bestDistance = std::numeric_limits<float>::max();
+                for (int j = 0; j < k; j++) {
+                    float d = distance(points, i, centroidsX[j], centroidsY[j]);
+                    if (d < bestDistance) {
+                        bestDistance = d;
+                        bestCluster = j;
+                    }
+                }
+                labels[i] = bestCluster;
+            }
+
+            // Parallelize centroid update with reduction
+            #pragma omp for reduction(+:newCentroidsX, newCentroidsY, counts)
+            for (size_t i = 0; i < numPoints; i++) {
+                int cluster = labels[i];
+                newCentroidsX[cluster] += points.getX(i);
+                newCentroidsY[cluster] += points.getY(i);
+                counts[cluster]++;
+            }
+
+            // Update centroids after parallel computation
+            #pragma omp for
+            for (int j = 0; j < k; j++) {
+                if (counts[j] > 0) {
+                    centroidsX[j] = newCentroidsX[j] / counts[j];
+                    centroidsY[j] = newCentroidsY[j] / counts[j];
+                }
+            }
+        }
+    }
+
+    // Save the labels if requested
+    if (saving) {
+        saveLabelsToCSV(labels, "../data/labels.csv");
+    }
 }
