@@ -1,32 +1,50 @@
 #include "SoA.h"
-
-void SoA_varing_num_threads(int max_num_threads){
-    std::vector<TimingResult> results;
-
-    int numPoints=10000;
-    int numClusters=5;
-    int maxIteration=10;
-    float epsilon=0.01;
-    
-    for (int num_Threads = 1; num_Threads <= max_num_threads; num_Threads++) {
-        float execution_time =  execute_SoA(numPoints,numClusters,maxIteration,epsilon,omp_get_max_threads());
-        results.push_back({numPoints, num_Threads, execution_time});
-        std::ofstream file("../data/execution_times.csv");
-        file << "num_points,num_threads,execution_time\n";
-        for (const auto& result : results) {
-            file << result.num_points << "," << result.num_threads << "," << result.execution_time << "\n";
-        }
-        file.close();
-    }
-}
-
-
-
+#include <chrono>
 
 int main() {
-    std::cout << omp_get_max_threads() << std::endl;
-    //SoA_varing_num_threads(omp_get_max_threads());
-    execute_SoA(10000,5,10,0.01,omp_get_max_threads());
+    try {
+        std::vector<size_t> numPointsList = {10000, 10000000, 100000000};
+        std::vector<int> clusters = {50,100}; 
+        std::vector<int> maxIterationsList = {50,100}; 
+        std::vector<int> numThreadsList = {1,4,8, 10, 12, 14, 16, 18, 20}; 
+
+        for (auto numPoints : numPointsList) {
+            for (auto k : clusters) {
+                for (auto maxIterations : maxIterationsList) {
+                    std::string filename = "../data/dataset.csv"; 
+
+                    // READ CSV!
+                    PointsSoA points = readCSVToSoA(filename, numPoints);
+
+                    auto startSeq = std::chrono::high_resolution_clock::now();
+
+                    kmeansSoA_seq(points, numPoints, k, maxIterations);
+
+                    auto endSeq = std::chrono::high_resolution_clock::now();
+                    std::chrono::duration<double> durationSeq = endSeq - startSeq;
+
+                    std::cout << "Sequential execution time for " << numPoints << " points, "<< k << " clusters, and " << maxIterations << " max iterations: "<< durationSeq.count() << " seconds" << std::endl;
+                    saveExecutionTimeToCSV("../data/execution_times_SoA.csv", numPoints, k, maxIterations, durationSeq.count(), 0);
+
+                    for (auto numThreads : numThreadsList) {
+
+                        auto startPar = std::chrono::high_resolution_clock::now();
+
+                        kmeansSoA_parallel(points, numPoints, k, maxIterations, numThreads);
+
+                        auto endPar = std::chrono::high_resolution_clock::now();
+                        std::chrono::duration<double> durationPar = endPar - startPar;
+
+                        std::cout << "Parallel execution time with " << numThreads << " threads for "<< numPoints << " points, " << k << " clusters, and "<< maxIterations << " max iterations: " << durationPar.count() << " seconds" << std::endl;
+                        saveExecutionTimeToCSV("../data/execution_times_SoA.csv", numPoints, k, maxIterations, durationPar.count(), numThreads);
+                    }
+                }
+            }
+        }
+
+    } catch (const std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
 
     return 0;
 }
