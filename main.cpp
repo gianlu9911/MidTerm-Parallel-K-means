@@ -3,10 +3,10 @@
 
 int main() {
     try {
-        std::vector<size_t> numPointsList = {10000, 10000000, 100000000};
+        std::vector<size_t> numPointsList = {10000, 10000000, 100000000 }; // 
         std::vector<int> clusters = {50,100}; 
         std::vector<int> maxIterationsList = {50,100}; 
-        std::vector<int> numThreadsList = {1,4,8, 10, 12, 14, 16, 18, 20}; 
+        std::vector<int> numThreadsList = {1,2,4,8,12,16,20, 22, 24, 30}; 
 
         for (auto numPoints : numPointsList) {
             for (auto k : clusters) {
