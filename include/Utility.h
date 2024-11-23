@@ -8,7 +8,7 @@
 #include <math.h>
 #include <random>
 
-struct PointsSoA {
+struct alignas(64) PointsSoA {
     std::vector<float> x;
     std::vector<float> y;
 

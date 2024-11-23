@@ -57,12 +57,18 @@ void kmeansSoA_parallel(const PointsSoA &points, size_t numPoints, int k, int ma
     
     // Explicitly initialize centroids
     std::vector<float> centroidsX(k), centroidsY(k);
-    #pragma omp parallel for
+    #pragma omp parallel
+{
+    std::random_device rd;
+    std::mt19937 gen(rd() ^ omp_get_thread_num());
+    std::uniform_real_distribution<float> dis(-100.0f, 100.0f);
+
+    #pragma omp for
     for (int i = 0; i < k; i++) {
-        // Generate random float within the range
-        centroidsX[i] = (-100) + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (200)));
-        centroidsY[i] = (-100) + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (200)));
+        centroidsX[i] = dis(gen);
+        centroidsY[i] = dis(gen);
     }
+}
 
     std::vector<int> labels(numPoints, -1);
 
@@ -76,7 +82,7 @@ void kmeansSoA_parallel(const PointsSoA &points, size_t numPoints, int k, int ma
         for (int iter = 0; iter < maxIterations; iter++) {
 
             // Parallelize point-to-centroid assignment
-            #pragma omp for
+            #pragma omp for schedule(guided)
             for (size_t i = 0; i < numPoints; i++) {
                 int bestCluster = -1;
                 float bestDistance = std::numeric_limits<float>::max();
@@ -100,7 +106,7 @@ void kmeansSoA_parallel(const PointsSoA &points, size_t numPoints, int k, int ma
             }
 
             // Update centroids after parallel computation
-            #pragma omp for
+            #pragma omp for 
             for (int j = 0; j < k; j++) {
                 if (counts[j] > 0) {
                     centroidsX[j] = newCentroidsX[j] / counts[j];
