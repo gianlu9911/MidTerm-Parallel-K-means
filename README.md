@@ -1,5 +1,5 @@
 # MidTerm-Parallel-K-means
-MidTerm examp for parallel computing: Implementing a sequential and parallel version of Kmenas algorithm in C++, parallel version is done in OpenMP.
+MidTerm exam for parallel computing: Implementing a sequential and parallel version of Kmenas algorithm in C++, parallel version is done in OpenMP.
 
 
 # K-Means Algorithm
