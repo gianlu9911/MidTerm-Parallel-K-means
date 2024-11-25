@@ -121,3 +121,19 @@ void saveExecutionTimesToCSV(const std::string& filename,
     file.close();
 }
 
+void saveLabelsToCSV(const std::vector<Point>& points, const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        throw std::ios_base::failure("Error: Could not open file for writing.");
+    }
+
+    // Write each point's cluster assignment
+    for (const auto& point : points) {
+        file << point.cluster_id << '\n';
+    }
+
+    file.close();
+    if (!file) {
+        throw std::ios_base::failure("Error: Could not write to file successfully.");
+    }
+}
