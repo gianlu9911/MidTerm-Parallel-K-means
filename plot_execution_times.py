@@ -4,7 +4,11 @@ import os
 import seaborn as sns
 
 # Read data from CSV file
-df = pd.read_csv('data/execution_times_SoA.csv')
+df = pd.read_csv('data\execution_times_AoS.csv')
+print(df.head())  # Check the first few rows
+print(df.info())  # Check for missing or inconsistent data
+print(df.describe())  # Get basic statistics for numeric columns
+
 
 plot_dir = 'data/plots'
 os.makedirs(plot_dir, exist_ok=True)
@@ -23,6 +27,11 @@ def calculate_speedup(data):
 
 # Calculate speedup
 data_with_speedup = calculate_speedup(df)
+print(data_with_speedup.head())
+print(data_with_speedup['speedup'].isna().sum())  # Check for NaN values in speedup
+print(data_with_speedup['speedup'].describe())  # Check for unusually large or small values
+print(data_with_speedup.groupby(['numThreads', 'numPoints', 'numClusters', 'maxIterations'])['speedup'].mean().reset_index())
+
 
 def plot_speedup_by_numPoints(data):
     # Group by numThreads, numPoints, numClusters, and maxIterations
@@ -41,6 +50,8 @@ def plot_speedup_by_numPoints(data):
         plt.figure(figsize=(10, 6))
 
         plot_data = grouped[grouped['numPoints'] == numPoints]
+        
+
 
         for (numClusters, maxIterations), group in plot_data.groupby(['numClusters', 'maxIterations']):
             color = cluster_colors[numClusters]  # Get color for this numClusters

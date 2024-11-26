@@ -6,10 +6,10 @@
 int main() {
     const std::string dataset = "../data/dataset.csv";
 
-    std::vector<size_t> numPointsList = {10000, 10000000};  // , 100000000
-    std::vector<int> clusters = {50, 100};  
-    std::vector<int> maxIterationsList = {50, 100};  
-    std::vector<int> numThreadsList = {1, 2, 4, 8, 12, 16, 20, 22, 24, 30};  
+    std::vector<size_t> numPointsList = {1000};  // , 100000000
+    std::vector<int> clusters = {5};  
+    std::vector<int> maxIterationsList = {50};  
+    std::vector<int> numThreadsList = {12};  
 
     for (size_t num_points : numPointsList) {
         for (int num_clusters : clusters) {
@@ -32,7 +32,7 @@ int main() {
 
                 for (int num_threads : numThreadsList) {
                     start = std::chrono::high_resolution_clock::now();
-                    kMeansAoS_parallel(points, num_clusters, max_iterations, num_threads);
+                    kMeansAoS_parallel(points, num_clusters, max_iterations, num_threads,true);
                     end = std::chrono::high_resolution_clock::now();
                     std::chrono::duration<double> elapsed_parallel = end - start;
 
