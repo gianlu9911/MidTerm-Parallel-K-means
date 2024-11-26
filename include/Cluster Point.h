@@ -9,26 +9,29 @@
 
 
 class Point {
-public:
     float x, y;
     int cluster_id;
-
+public:
     Point(float x_val = 0, float y_val = 0) : x(x_val), y(y_val), cluster_id(-1) {}
 
     float distanceTo(float cluster_x, float cluster_y) const {
         return std::pow(x - cluster_x, 2) + std::pow(y - cluster_y, 2);
     }
+
+    float getX() const { return x; }    
+    float getY() const { return y; }
+    int getClusterId() const { return cluster_id; }
+    void setClusterId(int id) { cluster_id = id; }
 };
 
 
 class Cluster {
-public:
     float x, y;
     float sum_x, sum_y;
     int size;
-
-    Cluster(float x_val = 0, float y_val = 0){
-        
+    
+public:    
+    Cluster(float x_val = 0, float y_val = 0){    
         std::random_device rd;
         std::mt19937 gen(rd()); 
         std::uniform_real_distribution<> dis(-100.0, 100.0); 
@@ -40,16 +43,17 @@ public:
         size = 0;
     }
 
+    void updateCenter() {
+        if (size > 0) {
+            x = sum_x / size;
+            y = sum_y / size;
+        }
+    }
+    
     void reset() {
         sum_x = 0;
         sum_y = 0;
         size = 0;
-    }
-
-    void addPoint(const Point& point) {
-        sum_x += point.x;
-        sum_y += point.y;
-        size++;
     }
 
     void updateCenter(float sum_x, float sum_y, int count) {
@@ -59,12 +63,18 @@ public:
         }
     }
 
-    void updateCenter() {
-        if (size > 0) {
-            x = sum_x / size;
-            y = sum_y / size;
-        }
+    float getX() const { return x; }
+    float getY() const { return y; }
+    float getSumX() const { return sum_x; }
+    float getSumY() const { return sum_y; }
+    int getSize() const { return size; }
+    void addPoint(const Point& point) {
+        sum_x += point.getX();
+        sum_y += point.getY();
+        size++;
     }
+
+    
 };
 
 
@@ -129,7 +139,7 @@ void saveLabelsToCSV(const std::vector<Point>& points, const std::string& filena
 
     // Write each point's cluster assignment
     for (const auto& point : points) {
-        file << point.cluster_id << '\n';
+        file << point.getClusterId() << '\n';
     }
 
     file.close();

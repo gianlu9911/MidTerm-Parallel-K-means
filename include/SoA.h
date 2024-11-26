@@ -58,7 +58,7 @@ void kmeansSoA_parallel(const PointsSoA &points, size_t numPoints, int k, int ma
     
     std::vector<float> centroidsX(k), centroidsY(k);
     #pragma omp parallel
-{
+    {
     std::random_device rd;
     std::mt19937 gen(rd() ^ omp_get_thread_num());
     std::uniform_real_distribution<float> dis(-100.0f, 100.0f);
@@ -68,11 +68,10 @@ void kmeansSoA_parallel(const PointsSoA &points, size_t numPoints, int k, int ma
         centroidsX[i] = dis(gen);
         centroidsY[i] = dis(gen);
     }
-}
+    }
 
     std::vector<int> labels(numPoints, -1);
 
-    // Allocate arrays for centroid updates (no need to delete)
     float newCentroidsX[k] = {0.0f}, newCentroidsY[k] = {0.0f};
     int counts[k] = {0};
 
