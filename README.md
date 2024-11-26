@@ -26,22 +26,20 @@ Points are organized as structure of vectors. This can provide better performanc
 In these files there is the real implementation of the algorithms in both version: As array of Structure and Structure of Array.
 
 # Utility.h
-Header with Point and CLuster struct definition and usefull function used in SoA implementation like:
-1. Function to save the points in a csv file to plot them
-2. Function to save the clusters' centroids in a csv file, to plot them 
+Header with Point struct definition and usefull function used in SoA implementation like a function to save the points in a csv file to plot them
 
 Points coordinated are defined as vectors of float. The cluster assignment of the points are described as vector of int.
 
 # ClusterPoint.h
-Here I define Point and Cluster classes. Point has x and y coordinated as float. The assignment to the cluster is done as an integer.
+Here I define Point and Cluster classes for AoS code version. Point has x and y coordinated as float. The assignment to the cluster is done as an integer.
 
 Cluster class has float coordinates of centroids, cumulative sums as floats and size as integer.
 
 In this file there is even function to save points and cluster informations in a csv in order to plot them later na dto generate random points and centroids.
 
-# Plot_Points.py
+# plot.py
 
-Python file to plot points and centroids described in data/points.csv and data/centroids.csv .
+Plots the result of clusterization.
 
 # Plot_execution_time.py
 
