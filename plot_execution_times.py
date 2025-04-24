@@ -4,7 +4,7 @@ import os
 import seaborn as sns
 
 # Read data from CSV file
-df = pd.read_csv('data\execution_times_AoS.csv')
+df = pd.read_csv('data/execution_times_AoS.csv')
 print(df.head())  # Check the first few rows
 print(df.info())  # Check for missing or inconsistent data
 print(df.describe())  # Get basic statistics for numeric columns
